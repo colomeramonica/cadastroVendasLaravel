@@ -21,6 +21,18 @@ class VendedorController extends Controller
      */
     public function addNew(Request $request)
     {
-        var_dump($request->get('seller_name')); exit;
+        $data = [
+            'nome' => $request->get('seller_name'),
+            'email' => $request->get('seller_email')
+        ];
+
+       $record =  $this->vendedor->addNew($data);
+    }
+
+    public function getAll()
+    {
+        $vendedores = $this->vendedor->getAll();
+
+        return view('sellers', ['vendedores' => $vendedores]);
     }
 }

@@ -1,11 +1,9 @@
 @extends('layouts.main')
-
 @section('content')
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta Nome="viewport" content="width=device-width, initial-scale=1">
 <title>Cadastro de Vendas</title>
 
@@ -27,33 +25,23 @@
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
-						<th>
-							<span class="custom-checkbox">
-								<input type="checkbox" id="selectAll">
-								<label for="selectAll"></label>
-							</span>
-						</th>
+						<th>#</th>
                         <th>Nome</th>
                         <th>Email</th>
 						<th>Total de Comissões</th>
                     </tr>
                 </thead>
                 <tbody>
-
+					@foreach($vendedores as $vendedor)
+					<tr>
+						<td>{{ $vendedor->id }} </td>
+						<td>{{ $vendedor->nome }} </td>
+						<td>{{ $vendedor->email }} </td>
+						<td>{{ $vendedor->comissao }} </td>
+					</tr>
+					@endforeach
                 </tbody>
             </table>
-			<div class="clearfix">
-                <div class="hint-text">Showing <b>5</b> out of <b>25</b> entries</div>
-                <ul class="pagination">
-                    <li class="page-item disabled"><a href="#">Previous</a></li>
-                    <li class="page-item"><a href="#" class="page-link">1</a></li>
-                    <li class="page-item"><a href="#" class="page-link">2</a></li>
-                    <li class="page-item active"><a href="#" class="page-link">3</a></li>
-                    <li class="page-item"><a href="#" class="page-link">4</a></li>
-                    <li class="page-item"><a href="#" class="page-link">5</a></li>
-                    <li class="page-item"><a href="#" class="page-link">Next</a></li>
-                </ul>
-            </div>
         </div>
     </div>
 	<!-- Edit Modal HTML -->
@@ -61,7 +49,7 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
                 <form action="/vendedor/new" method="POST">
-                @csrf
+				{{ csrf_field() }}
 					<div class="modal-header">
 						<h4 class="modal-title">Adicionar Vendedor</h4>
 						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -69,11 +57,11 @@
 					<div class="modal-body">
 						<div class="form-group">
 							<label for="seller_name">Nome</label>
-							<input type="text" class="form-control" id="seller_name" required>
+							<input type="text" class="form-control" name="seller_name" id="seller_name" required>
 						</div>
 						<div class="form-group">
 							<label for="seller_email">Email</label>
-							<input type="email" class="form-control" id="seller_email" required>
+							<input type="email" class="form-control" name="seller_email" id="seller_email" required>
 						</div>
 					</div>
 					<div class="modal-footer">
@@ -88,7 +76,8 @@
 	<div id="editSellerModal" class="modal fade">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<form>
+				<form action="/vendedor/update" method="POST">
+				{{ csrf_field() }}
 					<div class="modal-header">
 						<h4 class="modal-title">Editar Vendedor</h4>
 						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -115,7 +104,7 @@
 	<div id="deleteSellerModal" class="modal fade">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<form>
+				<form action="/vendedor/delete" method="POST">
 					<div class="modal-header">
 						<h4 class="modal-title">Apagar Vendedor</h4>
 						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
