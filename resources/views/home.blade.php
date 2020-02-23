@@ -9,67 +9,33 @@
 
 </head>
 <body>
+	@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+	@endif
     <div class="container">
         <div class="table-wrapper">
             <div class="table-title">
                 <div class="row">
                     <div class="col-sm-6">
-						<h2>Gerenciar <b>Vendas</b></h2>
-					</div>
-					<div class="col-sm-6">
-						<a href="#newSaleModal" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Nova Venda</span></a>
+						<h2>Gerenciamento da <b>Plataforma de Vendas</b></h2>
 					</div>
                 </div>
             </div>
-            <table class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Vendedor</th>
-                        <th>Total da Venda</th>
-                    </tr>
-                </thead>
-                <tbody>
-					@foreach($vendas as $venda)
-					<tr>
-                        <td>{{ $venda->id }} </td>
-                        <td>{{ $venda->nome }} </td>
-						<td>{{ $venda->total_venda }} </td>
-					</tr>
-					@endforeach
-                </tbody>
-            </table>
+            <div class="row">
+                <div class="col-lg-4"></div>
+                <div class="col-lg-4">
+                    <a href="/vendedores" class="btn btn-success"><i class="material-icons">&#xE147;</i> <span>Vendedores</span></a>
+                    <a href="/vendas" class="btn btn-success"><i class="material-icons">&#xE147;</i> <span>Vendas</span></a>
+                </div>
+            </div>
         </div>
     </div>
-	<!-- Edit Modal HTML -->
-	<div id="newSaleModal" class="modal fade">
-		<div class="modal-dialog">
-			<div class="modal-content">
-                <form action="/vendedor/new" method="POST">
-				{{ csrf_field() }}
-					<div class="modal-header">
-						<h4 class="modal-title">Adicionar Venda</h4>
-						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					</div>
-					<div class="modal-body">
-						<div class="form-group">
-							<label for="seller_name">Vendedor</label>
-							<select class="form-control" id="getSeller">
-                              </select>
-						</div>
-						<div class="form-group">
-							<label for="seller_email">Total da Venda</label>
-							<input type="email" class="form-control" name="total_venda" id="total_venda" required>
-						</div>
-					</div>
-					<div class="modal-footer">
-						<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancelar">
-						<input type="button" class="btn btn-add-seller btn-success" value="Adicionar">
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
 </body>
 </html>
 
@@ -302,32 +268,95 @@
 </style>
 <script type="text/javascript">
 $(document).ready(function(){
+	const request = new Request(location);
 
 	// Activate tooltip
 	$('[data-toggle="tooltip"]').tooltip();
 
-    $.ajax({
-        url: `${location.origin}/vendedores/index`,
-        method: 'POST',
-    }).done((res) => {
-        $('#getSeller').append($('<option>').attr('value', res.id).text(res.nome));
-    });
-
-	$('.btn-add-sale').on('click', () => {
+	$('.btn-add-seller').on('click', () => {
 		$.ajax({
-			url: `${location.origin}/venda/new`,
+			url: `${location.origin}/vendedor/new`,
 			method: 'POST',
 			data: {
-				seller_id: $('#getSeller').val(),
-				total_venda: $('#total_venda').val()
+				seller_name: $('#seller_name').val(),
+				seller_email: $('#seller_email').val()
 			}
-		}).done(() => {
+		}).done((res) => {
 			$('#addSellerModal').modal('hide');
+		});
+	});
 
-            setTimeout(function() {
+	let sellerId;
+	$('.btn-remove').on('click', (e) => {
+		sellerId = $(e.target).data('id');
+	});
+
+	$('.btn-update').on('click', (e) => {
+		sellerId = $(e.target).data('id');
+	});
+
+	$('.btn-delete-seller').on('click', () => {
+		$.ajax({
+			url: `${location.origin}/vendedor/delete`,
+			method: 'POST',
+			data: {
+				id: sellerId
+			}
+		}).done((res) => {
+			$('#deleteSellerModal').modal('hide');
+
+			setTimeout(function() {
 				location.reload();
 			}, 1000);
 		});
+	});
+
+	$('.btn-update').on('click', () => {
+		$.ajax({
+			url: `${location.origin}/vendedor/get`,
+			method: 'POST',
+			data: {
+				id: sellerId,
+			}
+		}).done((res) => {
+			console.log(res);
+		});
+	});
+
+	$('.btn-update-seller').on('click', () => {
+		$.ajax({
+			url: `${location.origin}/vendedor/update`,
+			method: 'POST',
+			data: {
+				id: sellerId,
+				seller_name: $('#seller_name').val(),
+				seller_email: $('#seller_email').val()
+			}
+		}).done((res) => {
+			$('#editSellerModal').modal('hide');
+
+			setTimeout(function() {
+				location.reload();
+			}, 1000);
+		});
+	});
+
+	var checkbox = $('table tbody input[type="checkbox"]');
+	$("#selectAll").click(function(){
+		if(this.checked){
+			checkbox.each(function(){
+				this.checked = true;
+			});
+		} else{
+			checkbox.each(function(){
+				this.checked = false;
+			});
+		}
+	});
+	checkbox.click(function(){
+		if(!this.checked){
+			$("#selectAll").prop("checked", false);
+		}
 	});
 
 });
