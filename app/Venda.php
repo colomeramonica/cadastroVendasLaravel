@@ -25,10 +25,39 @@ class Venda extends Model
                 'comissao' => $venda['comissao']
             ]);
 
-        if ($venda == 1) {
-            return redirect('/vendas')->with('status', 'success');
+        if ($venda) {
+            return true;
         }
 
-        return redirect('/vendas')->with('status', 'failure');
+        return false;
+    }
+
+    public function getAll()
+    {
+        $vendedores = DB::table('vendas')
+        ->leftJoin('vendedores', 'vendedores.id', '=', 'vendas.id_vendedor')
+        ->select('vendas.id', 'vendas.total_venda', 'vendedores.nome')
+        ->groupBy('vendas.id','vendas.total_venda', 'vendedores.nome')
+        ->paginate(10);
+
+        return $vendedores;
+    }
+
+    public function create($venda)
+    {
+        $venda = DB::table('vendas')
+            ->insert([
+                'id_vendedor' => $venda['id_vendedor'],
+                'total_venda' => $venda['total_venda'],
+                'comissao' => $venda['comissao'],
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+        if ($venda) {
+            return true;
+        }
+
+        return false;
     }
 }

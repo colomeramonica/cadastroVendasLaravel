@@ -2,83 +2,47 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Illuminate\Http\Request as Request;
+use App\Venda;
+use Illuminate\Http\JsonResponse;
 
 class VendaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+    protected $vendedor;
+    public function __construct(Venda $venda) {
+        $this->venda = $venda;
+    }
+
+      /**
+     * Traz todos as vendas
      */
     public function index()
     {
-        //
+        $vendas = $this->venda->getAll();
+
+        return view('sales', ['vendas' => $vendas]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+   /**
+    * Cria uma nova venda
+    */
+    public function create(Request $request)
+    {   $comissao = (8.5 / 100) * $request->get('total_venda');
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        $data = [
+            'id_vendedor' => $request->get('seller_id'),
+            'total_venda' => $request->get('total_venda'),
+            'comissao' => $comissao
+        ];
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
+       $record =  $this->venda->create($data);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
+        if ($record) {
+            $response = 'ok';
+        } else {
+            $response['exception'] = 'Ocorreu um erro ao inserir venda';
+        }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        return new JsonResponse($response);
     }
 }

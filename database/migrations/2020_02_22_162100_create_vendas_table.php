@@ -17,7 +17,7 @@ class CreateVendasTable extends Migration
             $table->increments('id');
             $table->integer('id_vendedor');
             $table->float('total_venda');
-            $table->float('comissao');
+            $table->float('comissao')->default(0);
             $table->timestamps();
         });
     }

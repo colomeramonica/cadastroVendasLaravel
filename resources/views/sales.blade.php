@@ -9,48 +9,32 @@
 
 </head>
 <body>
-	@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-	@endif
     <div class="container">
         <div class="table-wrapper">
             <div class="table-title">
                 <div class="row">
                     <div class="col-sm-6">
-						<h2>Gerenciar <b>Vendedores</b></h2>
+						<h2>Gerenciar <b>Vendas</b></h2>
 					</div>
 					<div class="col-sm-6">
-						<a href="#addSellerModal" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Adicionar Vendedor</span></a>
+						<a href="#newSaleModal" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Nova Venda</span></a>
 					</div>
                 </div>
             </div>
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
-						<th>#</th>
-                        <th>Nome</th>
-                        <th>Email</th>
-						<th>Total de Comissões</th>
-						<th>Ações</th>
+                        <th>#</th>
+                        <th>Vendedor</th>
+                        <th>Total da Venda</th>
                     </tr>
                 </thead>
                 <tbody>
-					@foreach($vendedores as $vendedor)
+					@foreach($vendas as $venda)
 					<tr>
-						<td>{{ $vendedor->id }} </td>
-						<td>{{ $vendedor->nome }} </td>
-						<td>{{ $vendedor->email }} </td>
-						<td>{{ $vendedor->comissao }} </td>
-						<td>
-                            <a href="#editSellerModal" class="edit" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Editar">&#xE254;</i></a>
-                            <a href="#deleteSellerModal" class="delete" data-toggle="modal"><i class="material-icons btn-remove" data-id="{{ $vendedor->id }}" data-toggle="tooltip" title="Deletar">&#xE872;</i></a>
-                        </td>
+                        <td>{{ $vendedor->id }} </td>
+                        <td>{{ $vendedor->vendedor }} </td>
+						<td>{{ $vendedor->total_venda }} </td>
 					</tr>
 					@endforeach
                 </tbody>
@@ -58,77 +42,29 @@
         </div>
     </div>
 	<!-- Edit Modal HTML -->
-	<div id="addSellerModal" class="modal fade">
+	<div id="newSaleModal" class="modal fade">
 		<div class="modal-dialog">
 			<div class="modal-content">
                 <form action="/vendedor/new" method="POST">
 				{{ csrf_field() }}
 					<div class="modal-header">
-						<h4 class="modal-title">Adicionar Vendedor</h4>
+						<h4 class="modal-title">Adicionar Venda</h4>
 						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 					</div>
 					<div class="modal-body">
 						<div class="form-group">
-							<label for="seller_name">Nome</label>
-							<input type="text" class="form-control" name="seller_name" id="seller_name" required>
+							<label for="seller_name">Vendedor</label>
+							<select class="form-control" id="getSeller">
+                              </select>
 						</div>
 						<div class="form-group">
-							<label for="seller_email">Email</label>
-							<input type="email" class="form-control" name="seller_email" id="seller_email" required>
+							<label for="seller_email">Total da Venda</label>
+							<input type="email" class="form-control" name="total_venda" id="total_venda" required>
 						</div>
 					</div>
 					<div class="modal-footer">
 						<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancelar">
 						<input type="button" class="btn btn-add-seller btn-success" value="Adicionar">
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
-	<!-- Edit Modal HTML -->
-	<div id="editSellerModal" class="modal fade">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<form>
-				{{ csrf_field() }}
-					<div class="modal-header">
-						<h4 class="modal-title">Editar Vendedor</h4>
-						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					</div>
-					<div class="modal-body">
-						<div class="form-group">
-							<label>Nome</label>
-							<input type="text" class="form-control" required>
-						</div>
-						<div class="form-group">
-							<label>Email</label>
-							<input type="email" class="form-control" required>
-						</div>
-					</div>
-					<div class="modal-footer">
-						<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancelar">
-						<input type="button" class="btn btn-update-seller btn-info" value="Save">
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
-	<!-- Delete Modal HTML -->
-	<div id="deleteSellerModal" class="modal fade">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<form>
-					<div class="modal-header">
-						<h4 class="modal-title">Apagar Vendedor</h4>
-						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					</div>
-                    <div class="modal-body">
-						<p>Você tem certeza que deseja apagar esse registro?</p>
-						<p class="text-warning"><small>Essa ação não pode ser desfeita.</small></p>
-					</div>
-					<div class="modal-footer">
-						<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancelar">
-						<input type="buttom" class="btn btn-delete-seller btn-danger" value="Delete">
 					</div>
 				</form>
 			</div>
@@ -366,95 +302,32 @@
 </style>
 <script type="text/javascript">
 $(document).ready(function(){
-	const request = new Request(location);
 
 	// Activate tooltip
 	$('[data-toggle="tooltip"]').tooltip();
 
-	$('.btn-add-seller').on('click', () => {
+    $.ajax({
+        url: `${location.origin}/vendedores/index`,
+        method: 'POST',
+    }).done((res) => {
+        $('#getSeller').append($('<option>').attr('value', res.id).text(res.nome));
+    });
+
+	$('.btn-add-sale').on('click', () => {
 		$.ajax({
-			url: `${location.origin}/vendedor/new`,
+			url: `${location.origin}/venda/new`,
 			method: 'POST',
 			data: {
-				seller_name: $('#seller_name').val(),
-				seller_email: $('#seller_email').val()
+				seller_id: $('#getSeller').val(),
+				total_venda: $('#total_venda').val()
 			}
-		}).done((res) => {
+		}).done(() => {
 			$('#addSellerModal').modal('hide');
-		});
-	});
 
-	let sellerId;
-	$('.btn-remove').on('click', (e) => {
-		sellerId = $(e.target).data('id');
-	});
-
-	$('.btn-update').on('click', (e) => {
-		sellerId = $(e.target).data('id');
-	});
-
-	$('.btn-delete-seller').on('click', () => {
-		$.ajax({
-			url: `${location.origin}/vendedor/delete`,
-			method: 'POST',
-			data: {
-				id: sellerId
-			}
-		}).done((res) => {
-			$('#deleteSellerModal').modal('hide');
-
-			setTimeout(function() {
+            setTimeout(function() {
 				location.reload();
 			}, 1000);
 		});
-	});
-
-	$('.btn-update').on('click', () => {
-		$.ajax({
-			url: `${location.origin}/vendedor/get`,
-			method: 'POST',
-			data: {
-				id: sellerId,
-			}
-		}).done((res) => {
-			console.log(res);
-		});
-	});
-
-	$('.btn-update-seller').on('click', () => {
-		$.ajax({
-			url: `${location.origin}/vendedor/update`,
-			method: 'POST',
-			data: {
-				id: sellerId,
-				seller_name: $('#seller_name').val(),
-				seller_email: $('#seller_email').val()
-			}
-		}).done((res) => {
-			$('#editSellerModal').modal('hide');
-
-			setTimeout(function() {
-				location.reload();
-			}, 1000);
-		});
-	});
-
-	var checkbox = $('table tbody input[type="checkbox"]');
-	$("#selectAll").click(function(){
-		if(this.checked){
-			checkbox.each(function(){
-				this.checked = true;
-			});
-		} else{
-			checkbox.each(function(){
-				this.checked = false;
-			});
-		}
-	});
-	checkbox.click(function(){
-		if(!this.checked){
-			$("#selectAll").prop("checked", false);
-		}
 	});
 
 });
