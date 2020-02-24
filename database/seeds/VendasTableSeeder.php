@@ -11,6 +11,6 @@ class VendasTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(\App\Venda::class, 30)->create();
+        factory(\App\Venda::class, 5)->create();
     }
 }
