@@ -8,6 +8,6 @@ php artisan migrate
 php artisan db::seed
 
 ## Tecnologias utilizadas
-Laravel Framework 6.2
-MySql
-PHP Version 7.2
+* Laravel Framework 6.2
+* MySql
+* PHP Version 7.2
