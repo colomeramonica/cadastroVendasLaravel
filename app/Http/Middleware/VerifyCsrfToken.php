@@ -24,6 +24,7 @@ class VerifyCsrfToken extends Middleware
         '/vendedor/update',
         '/vendedor/get',
         '/vendas/',
-        '/venda/new'
+        '/venda/new',
+        '/venda/sellers'
     ];
 }

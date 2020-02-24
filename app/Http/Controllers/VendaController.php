@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\SendMail;
 use Illuminate\Http\Request as Request;
 use App\Venda;
+use App\Vendedores as Vendedores;
 use Illuminate\Http\JsonResponse;
 
 class VendaController extends Controller
 {
     protected $vendedor;
-    public function __construct(Venda $venda) {
+    public function __construct(Venda $venda, Vendedores $vendedores) {
         $this->venda = $venda;
+        $this->vendedores = $vendedores;
     }
 
       /**
@@ -35,14 +38,21 @@ class VendaController extends Controller
             'comissao' => $comissao
         ];
 
-       $record =  $this->venda->create($data);
+       return $this->venda->create($data);
+    }
 
-        if ($record) {
-            $response = 'ok';
-        } else {
-            $response['exception'] = 'Ocorreu um erro ao inserir venda';
+    public function getSellers()
+    {
+        return $this->vendedores->getAll();
+    }
+
+    public function mail()
+    {
+        $emails = $this->vendedores->getEmails();
+        $vendas = $this->venda->retrieveSales();
+
+        foreach ($emails as $email) {
+            Mail::to($email)->send(new SendMail($vendas));
         }
-
-        return new JsonResponse($response);
     }
 }

@@ -26,15 +26,7 @@ class VendedorController extends Controller
             'email' => $request->get('seller_email')
         ];
 
-       $record =  $this->vendedor->create($data);
-
-        if ($record) {
-            $response = 'ok';
-        } else {
-            $response['exception'] = 'Ocorreu um erro ao inserir vendedor';
-        }
-
-        return new JsonResponse($response);
+       return $this->vendedor->create($data);
     }
 
     /**
@@ -53,15 +45,7 @@ class VendedorController extends Controller
     public function getById(Request $request)
     {
         $id = $request->get('id');
-        $vendedor = $this->vendedor->getById($id);
-
-        if ($vendedor) {
-            dd($vendedor);
-        } else {
-            $response['exception'] = 'Ocorreu um erro ao inserir vendedor';
-        }
-
-        return new JsonResponse($response);
+        return $this->vendedor->getById($id);
     }
 
     /**
@@ -70,15 +54,7 @@ class VendedorController extends Controller
     public function remove(Request $request)
     {
         $id = $request->get('id');
-        $record = $this->vendedor->remove($id);
-
-        if ($record) {
-            $response = 'ok';
-        } else {
-            $response['exception'] = 'Ocorreu um erro ao remover vendedor';
-        }
-
-        return new JsonResponse($response);
+        return $this->vendedor->remove($id);
     }
 
     /**
@@ -92,14 +68,6 @@ class VendedorController extends Controller
             'email' => $request->get('seller_email')
         ];
 
-        $record = $this->vendedor->update($id, $data);
-
-        if ($record) {
-            $response = 'ok';
-        } else {
-            $response['exception'] = 'Ocorreu um erro ao atualizar vendedor';
-        }
-
-        return new JsonResponse($response);
+        return $this->vendedor->renew($id, $data);
     }
 }

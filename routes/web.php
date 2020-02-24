@@ -15,9 +15,10 @@ Route::get('/home', function () {
 });
 Route::get('vendas', 'VendaController@index'); // Lista todas as vendas
 Route::post('venda/new', 'VendaController@create'); // Cria uma nova venda
+Route::post('venda/sellers', 'VendaController@getSellers'); // Lista os vendedores
 ########################
 Route::get('vendedores', 'VendedorController@index'); // Lista todos os vendedores
 Route::post('vendedor/new', 'VendedorController@addNew'); // Adiciona um novo vendedor
-Route::get('vendedor/get', 'VendedorController@getById'); // Recupera informações do vendedor
-Route::put('vendedor/update', 'VendedorController@update'); // Atualiza os dados do vendedor
+Route::post('vendedor/get', 'VendedorController@getById'); // Recupera informações do vendedor
+Route::post('vendedor/update', 'VendedorController@update'); // Atualiza os dados do vendedor
 Route::post('vendedor/delete', 'VendedorController@remove'); // Deleta um vendedor

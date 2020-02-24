@@ -34,7 +34,7 @@
 					<tr>
                         <td>{{ $venda->id }} </td>
                         <td>{{ $venda->nome }} </td>
-						<td>{{ $venda->total_venda }} </td>
+						<td>R$ {{ number_format($venda->total_venda, 2, ',', '.') }} </td>
 					</tr>
 					@endforeach
                 </tbody>
@@ -64,7 +64,7 @@
 					</div>
 					<div class="modal-footer">
 						<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancelar">
-						<input type="button" class="btn btn-add-seller btn-success" value="Adicionar">
+						<input type="button" class="btn btn-add-sale btn-success" value="Adicionar">
 					</div>
 				</form>
 			</div>
@@ -307,10 +307,14 @@ $(document).ready(function(){
 	$('[data-toggle="tooltip"]').tooltip();
 
     $.ajax({
-        url: `${location.origin}/vendedores/index`,
+        url: `${location.origin}/venda/sellers`,
         method: 'POST',
     }).done((res) => {
-        $('#getSeller').append($('<option>').attr('value', res.id).text(res.nome));
+		if (!res.exception) {
+			$(res.data).each((i, val) => {
+				$('#getSeller').append($('<option>').attr('value', val.id).text(val.nome));
+			});
+		}
     });
 
 	$('.btn-add-sale').on('click', () => {

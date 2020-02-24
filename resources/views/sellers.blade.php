@@ -46,9 +46,9 @@
 						<td>{{ $vendedor->id }} </td>
 						<td>{{ $vendedor->nome }} </td>
 						<td>{{ $vendedor->email }} </td>
-						<td>{{ $vendedor->comissao }} </td>
+						<td>R$ {{ number_format($vendedor->comissao, 2, ',', '.') }} </td>
 						<td>
-                            <a href="#editSellerModal" class="edit" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Editar">&#xE254;</i></a>
+                            <a href="#editSellerModal" class="edit" data-toggle="modal"><i class="material-icons btn-update" data-id="{{ $vendedor->id }}" data-toggle="tooltip" title="Editar">&#xE254;</i></a>
                             <a href="#deleteSellerModal" class="delete" data-toggle="modal"><i class="material-icons btn-remove" data-id="{{ $vendedor->id }}" data-toggle="tooltip" title="Deletar">&#xE872;</i></a>
                         </td>
 					</tr>
@@ -98,16 +98,16 @@
 					<div class="modal-body">
 						<div class="form-group">
 							<label>Nome</label>
-							<input type="text" class="form-control" required>
+							<input type="text" class="form-control" name="seller_name" id="seller_update_name" required>
 						</div>
 						<div class="form-group">
 							<label>Email</label>
-							<input type="email" class="form-control" required>
+							<input type="email" class="form-control" name="seller_email" id="seller_update_email" required>
 						</div>
 					</div>
 					<div class="modal-footer">
 						<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancelar">
-						<input type="button" class="btn btn-update-seller btn-info" value="Save">
+						<input type="button" class="btn btn-update-seller btn-info" value="Salvar">
 					</div>
 				</form>
 			</div>
@@ -128,7 +128,7 @@
 					</div>
 					<div class="modal-footer">
 						<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancelar">
-						<input type="buttom" class="btn btn-delete-seller btn-danger" value="Delete">
+						<input type="buttom" class="btn btn-delete-seller btn-danger" value="Deletar">
 					</div>
 				</form>
 			</div>
@@ -379,8 +379,12 @@ $(document).ready(function(){
 				seller_name: $('#seller_name').val(),
 				seller_email: $('#seller_email').val()
 			}
-		}).done((res) => {
+		}).done(() => {
 			$('#addSellerModal').modal('hide');
+
+			setTimeout(function() {
+				location.reload();
+			}, 1000);
 		});
 	});
 
@@ -400,7 +404,7 @@ $(document).ready(function(){
 			data: {
 				id: sellerId
 			}
-		}).done((res) => {
+		}).done(() => {
 			$('#deleteSellerModal').modal('hide');
 
 			setTimeout(function() {
@@ -417,7 +421,10 @@ $(document).ready(function(){
 				id: sellerId,
 			}
 		}).done((res) => {
-			console.log(res);
+			if (!res.exception) {
+				$('#seller_update_name').val(res[0].nome);
+				$('#seller_update_email').val(res[0].email);
+			}
 		});
 	});
 
@@ -427,34 +434,16 @@ $(document).ready(function(){
 			method: 'POST',
 			data: {
 				id: sellerId,
-				seller_name: $('#seller_name').val(),
-				seller_email: $('#seller_email').val()
+				seller_name: $('#seller_update_name').val(),
+				seller_email: $('#seller_update_email').val()
 			}
-		}).done((res) => {
+		}).done(() => {
 			$('#editSellerModal').modal('hide');
 
 			setTimeout(function() {
 				location.reload();
 			}, 1000);
 		});
-	});
-
-	var checkbox = $('table tbody input[type="checkbox"]');
-	$("#selectAll").click(function(){
-		if(this.checked){
-			checkbox.each(function(){
-				this.checked = true;
-			});
-		} else{
-			checkbox.each(function(){
-				this.checked = false;
-			});
-		}
-	});
-	checkbox.click(function(){
-		if(!this.checked){
-			$("#selectAll").prop("checked", false);
-		}
 	});
 
 });

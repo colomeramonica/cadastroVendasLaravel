@@ -4,7 +4,9 @@ namespace App;
 
 use DateTime;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use PHPUnit\Util\Json;
 
 class Vendedores extends Model
 {
@@ -12,68 +14,89 @@ class Vendedores extends Model
 
     public function getAll()
     {
-        $vendedores = DB::table('vendedores')
-        ->leftJoin('vendas', 'vendedores.id', '=', 'vendas.id_vendedor')
-        ->select('vendedores.id', 'vendedores.nome', 'vendedores.email', DB::raw('sum(vendas.comissao) as comissao'))
-        ->groupBy('vendedores.id','vendedores.nome', 'vendedores.email', 'comissao')
-        ->paginate(10);
+        try {
+            $response = DB::table('vendedores')
+            ->leftJoin('vendas', 'vendedores.id', '=', 'vendas.id_vendedor')
+            ->select('vendedores.id', 'vendedores.nome', 'vendedores.email', DB::raw('sum(vendas.comissao) as comissao'))
+            ->groupBy('vendedores.id','vendedores.nome', 'vendedores.email', 'comissao')
+            ->paginate(10);
+        } catch (\Exception $e) {
+            $response['exception'] = $e->getMessage();
+        }
 
-        return $vendedores;
+        return $response;
     }
 
     public function getById($id)
     {
-        $vendedor = DB::table('vendedores')
-        ->where('id', '=', $id)
-        ->get();
+        try {
+            $response = DB::table('vendedores')
+            ->where('id', '=', $id)
+            ->get();
+        } catch (\Exception $e) {
+            $response['exception'] = $e->getMessage();
+        }
 
-        return $vendedor;
+        return new JsonResponse($response);
+    }
+
+    public function getEmails()
+    {
+        try {
+            $response = DB::table('vendedores')
+            ->select('vendedores.email')
+            ->get();
+        } catch(\Exception $e) {
+            $response['exception'] = $e->getMessage();
+        }
+
+        return $response;
     }
 
     public function create($vendedor)
     {
-        $vendedor = DB::table('vendedores')
-            ->insert([
-                'nome' => $vendedor['nome'],
-                'email' => $vendedor['email'],
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-
-        if ($vendedor) {
-            return true;
+        try {
+            $response = DB::table('vendedores')
+                ->insert([
+                    'nome' => $vendedor['nome'],
+                    'email' => $vendedor['email'],
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+        } catch (\Exception $e) {
+            $response['exception'] = $e->getMessage();
         }
 
-        return false;
+       return new JsonResponse($response);
+    }
+
+    public function renew($id, $vendedor)
+    {
+        try {
+            $response = DB::table('vendedores')
+                ->where('id', $id)
+                ->update([
+                    'nome' => $vendedor['nome'],
+                    'email' => $vendedor['email'],
+                    'updated_at' => now()
+                ]);
+        } catch (\Exception $e) {
+            $response['exception'] = $e->getMessage();
+        }
+
+        return new JsonResponse($response);
     }
 
     public function remove($id)
     {
-        $vendedor = DB::table('vendedores')
-            ->where('id', '=', $id)
-            ->delete();
-
-        if ($vendedor) {
-            return true;
+        try {
+            $response = DB::table('vendedores')
+                ->where('id', '=', $id)
+                ->delete();
+        } catch (\Exception $e) {
+            $response['exception'] = $e->getMessage();
         }
 
-        return false;
-    }
-
-    public function update($id, $vendedor)
-    {
-        $vendedor = DB::table('vendedores')
-            ->where('id', '=', $id)
-            ->update([
-                'nome' => $vendedor['nome'],
-                'email' => $vendedor['email'],
-                'updated_at' => now()
-            ]);
-
-        if ($vendedor) {
-            return true;
-        }
-
-        return false;
+        return new JsonResponse($response);
     }
 }
